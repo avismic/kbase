@@ -23,7 +23,24 @@ export async function POST(req: Request) {
     }
 
     // 4. Add the user's text question
-    promptContent.push({ text: message });
+    const fileNames = (files || []).map((file: any) => file.name).join(", ");
+
+    promptContent.push({
+      text: `
+Available documents:
+${fileNames}
+
+User Question:
+${message}
+
+At the end of your answer, add:
+
+Sources:
+- relevant file names used
+
+Only cite files from the available documents list.
+`,
+    });
 
     // 5. Generate the answer
     const result = await model.generateContent(promptContent);
